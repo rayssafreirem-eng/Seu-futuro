@@ -135,19 +135,30 @@
     th { background-color: #f1f3f5; }
     tr.completed td { text-decoration: line-through; color: #888; background-color: #f8f9fa; }
 
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
     @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
 
-    .cycle-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    .cycle-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
     .cycle-item {
       background: var(--secondary-color);
       color: white;
       padding: 10px 15px;
       border-radius: 6px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 10px;
     }
+    .cycle-item .actions button {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 3px;
+      cursor: pointer;
+      margin-left: 3px;
+      font-weight: bold;
+    }
+    .cycle-item .actions button:hover { background: rgba(255,255,255,0.4); }
 
     .calendar-grid {
       display: grid;
@@ -158,15 +169,21 @@
     .calendar-day {
       background: #fff;
       border: 1px solid var(--border-color);
-      min-height: 90px;
-      padding: 5px;
+      min-height: 110px;
+      padding: 6px;
       border-radius: 4px;
       font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
-    .calendar-day.revision { background-color: #fff3cd; }
-    .day-header { font-weight: bold; margin-bottom: 5px; }
-    .day-tasks { list-style: none; padding: 0; margin: 0; }
-    .day-tasks li { display: flex; justify-content: space-between; margin-bottom: 2px; }
+    .calendar-day.revision { background-color: #fff3cd; border-color: #ffeeba; }
+    .day-header { font-weight: bold; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+    .day-tasks { list-style: none; padding: 0; margin: 0 0 5px 0; flex-grow: 1; }
+    .day-tasks li { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; background: rgba(0,0,0,0.03); padding: 2px 4px; border-radius: 3px; }
+    .day-tasks li button { background: none; border: none; color: var(--danger-color); cursor: pointer; font-weight: bold; }
+    .btn-rev { font-size: 10px; padding: 2px 5px; border: 1px solid #ccc; background: #fff; border-radius: 3px; cursor: pointer; }
+    .calendar-day.revision .btn-rev { background: var(--warning-color); border-color: #d39e00; }
   </style>
 </head>
 <body>
@@ -181,8 +198,8 @@
   </header>
 
   <div class="nav-tabs">
-    <button class="tab-btn active" onclick="switchTab('tab1')">Edital & Cronômetro</button>
-    <button class="tab-btn" onclick="switchTab('tab2')">Dashboard, Ciclo & Calendário</button>
+    <button class="tab-btn active" onclick="switchTab('tab1', event)">Edital & Cronômetro</button>
+    <button class="tab-btn" onclick="switchTab('tab2', event)">Dashboard, Ciclo & Calendário</button>
   </div>
 
   <div class="container">
@@ -234,18 +251,29 @@
           <div><canvas id="chartDoughnut"></canvas></div>
           <div><canvas id="chartBar"></canvas></div>
         </div>
+        <div class="grid-2">
+          <div><canvas id="chartWeekly"></canvas></div>
+          <div><canvas id="chartMonthly"></canvas></div>
+        </div>
       </div>
 
       <div class="card">
         <h2>Ciclo de Estudos</h2>
-        <button class="btn btn-reset" onclick="resetCycle()">Resetar Ciclo</button>
+        <button class="btn btn-reset" onclick="resetCycle()" style="margin-bottom: 10px;">Resetar Ciclo Padrão</button>
         <div id="cycle-container" class="cycle-container"></div>
       </div>
 
       <div class="card">
-        <h2>Calendário Mensal</h2>
-        <input type="month" id="calendar-month-picker" onchange="renderCalendar()">
-        <div id="calendar-grid" class="calendar-grid"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h2>Calendário Mensal</h2>
+          <div>
+            <input type="month" id="calendar-month-picker" onchange="renderCalendar()">
+            <button class="btn btn-save" onclick="toggleExpandCalendar()" id="btn-expand-cal">Expandir / Ocultar</button>
+          </div>
+        </div>
+        <div id="calendar-wrapper">
+          <div id="calendar-grid" class="calendar-grid"></div>
+        </div>
       </div>
 
     </div>
@@ -253,7 +281,7 @@
   </div>
 
   <script>
-    // DADOS COMPLETOS E DETALHADOS DO EDITAL
+    // DADOS COMPLETOS E DETALHADOS DO EDITAL (COM RESOLUÇÕES COFEN DESMEMBRADAS NO ITEM 2.7)
     const editalData = {
       "Língua Portuguesa": [
         { id: "port_1", texto: "1 Compreensão e interpretação de textos de gêneros variados" },
@@ -385,14 +413,46 @@
         { id: "esp_1_19", texto: "1.19 Controle de infecção hospitalar" },
         { id: "esp_1_20", texto: "1.20 Código de ética dos profissionais de enfermagem" },
 
-        // 2. LEGISLAÇÃO ESPECÍFICA
+        // 2. LEGISLAÇÃO ESPECÍFICA (2.7 DESMEMBRADO EM CHECKBOXES INDIVIDUAIS)
         { id: "esp_2_1", texto: "2.1 Regimento Interno do Cofen" },
         { id: "esp_2_2", texto: "2.2 Lei nº 5.905/1973" },
         { id: "esp_2_3", texto: "2.3 Lei nº 7.498/1986" },
         { id: "esp_2_4", texto: "2.4 Decreto nº 94.406/1987" },
         { id: "esp_2_5", texto: "2.5 Lei nº 8.967/1994" },
         { id: "esp_2_6", texto: "2.6 Código de Ética dos Empregados Públicos do Sistema COFEN/COREN (Resolução COFEN nº 507/2016)" },
-        { id: "esp_2_7", texto: "2.7 Resoluções COFEN: nº 211/1998, nº 214/1998, nº 238/2000, nº 381/2011, nº 388/2011, nº 424/2012, nº 429/2012, nº 450/2013, nº 514/2016, nº 543/2017, nº 545/2017, nº 557/2017, nº 564/2017, nº 565/2017, nº 568/2018, nº 569/2018, nº 581/2018, nº 588/2018, nº 593/2018, nº 606/2019, nº 609/2019, nº 626/2020, nº 656/2020, nº 660/2021, nº 661/2021, nº 703/2022, nº 706/2022, nº 713/2022, nº 721/2023, nº 725/2023, nº 727/2023, nº 736/2024, Parecer Normativo nº 1/2024/COFEN" }
+        { id: "esp_2_7_res_211", texto: "2.7 Resolução COFEN nº 211/1998" },
+        { id: "esp_2_7_res_214", texto: "2.7 Resolução COFEN nº 214/1998" },
+        { id: "esp_2_7_res_238", texto: "2.7 Resolução COFEN nº 238/2000" },
+        { id: "esp_2_7_res_381", texto: "2.7 Resolução COFEN nº 381/2011" },
+        { id: "esp_2_7_res_388", texto: "2.7 Resolução COFEN nº 388/2011" },
+        { id: "esp_2_7_res_424", texto: "2.7 Resolução COFEN nº 424/2012" },
+        { id: "esp_2_7_res_429", texto: "2.7 Resolução COFEN nº 429/2012" },
+        { id: "esp_2_7_res_450", texto: "2.7 Resolução COFEN nº 450/2013" },
+        { id: "esp_2_7_res_514", texto: "2.7 Resolução COFEN nº 514/2016" },
+        { id: "esp_2_7_res_543", texto: "2.7 Resolução COFEN nº 543/2017" },
+        { id: "esp_2_7_res_545", texto: "2.7 Resolução COFEN nº 545/2017" },
+        { id: "esp_2_7_res_557", texto: "2.7 Resolução COFEN nº 557/2017" },
+        { id: "esp_2_7_res_564", texto: "2.7 Resolução COFEN nº 564/2017" },
+        { id: "esp_2_7_res_565", texto: "2.7 Resolução COFEN nº 565/2017" },
+        { id: "esp_2_7_res_568", texto: "2.7 Resolução COFEN nº 568/2018" },
+        { id: "esp_2_7_res_569", texto: "2.7 Resolução COFEN nº 569/2018" },
+        { id: "esp_2_7_res_581", texto: "2.7 Resolução COFEN nº 581/2018" },
+        { id: "esp_2_7_res_588", texto: "2.7 Resolução COFEN nº 588/2018" },
+        { id: "esp_2_7_res_593", texto: "2.7 Resolução COFEN nº 593/2018" },
+        { id: "esp_2_7_res_606", texto: "2.7 Resolução COFEN nº 606/2019" },
+        { id: "esp_2_7_res_609", texto: "2.7 Resolução COFEN nº 609/2019" },
+        { id: "esp_2_7_res_626", texto: "2.7 Resolução COFEN nº 626/2020" },
+        { id: "esp_2_7_res_656", texto: "2.7 Resolução COFEN nº 656/2020" },
+        { id: "esp_2_7_res_660", texto: "2.7 Resolução COFEN nº 660/2021" },
+        { id: "esp_2_7_res_661", texto: "2.7 Resolução COFEN nº 661/2021" },
+        { id: "esp_2_7_res_703", texto: "2.7 Resolução COFEN nº 703/2022" },
+        { id: "esp_2_7_res_706", texto: "2.7 Resolução COFEN nº 706/2022" },
+        { id: "esp_2_7_res_713", texto: "2.7 Resolução COFEN nº 713/2022" },
+        { id: "esp_2_7_res_721", texto: "2.7 Resolução COFEN nº 721/2023" },
+        { id: "esp_2_7_res_725", texto: "2.7 Resolução COFEN nº 725/2023" },
+        { id: "esp_2_7_res_727", texto: "2.7 Resolução COFEN nº 727/2023" },
+        { id: "esp_2_7_res_736", texto: "2.7 Resolução COFEN nº 736/2024" },
+        { id: "esp_2_7_parecer_1", texto: "2.7 Parecer Normativo COFEN nº 1/2024" }
       ]
     };
 
@@ -404,12 +464,13 @@
 
     let timerInterval = null;
     let timerSeconds = 0;
+    let calendarExpanded = true;
 
-    function switchTab(tabId) {
+    function switchTab(tabId, evt) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
-      event.target.classList.add('active');
+      if(evt) evt.target.classList.add('active');
       if(tabId === 'tab2') renderCharts();
     }
 
@@ -506,6 +567,7 @@
       bar.innerText = `${totalHours.toFixed(1)}h / 300h (${percent}%)`;
     }
 
+    // CICLO DE ESTUDOS - REORGANIZÁVEL (MOVER PARA CIMA E PARA BAIXO)
     function renderCycle() {
       const cycle = JSON.parse(localStorage.getItem('study_cycle') || JSON.stringify(defaultCycle));
       const container = document.getElementById('cycle-container');
@@ -515,12 +577,27 @@
         const item = document.createElement('div');
         item.className = 'cycle-item';
         item.innerHTML = `
-          <span>${subject}</span>
-          <button onclick="duplicateCycleItem(${index})">+</button>
-          <button onclick="removeCycleItem(${index})">×</button>
+          <span><strong>Etapa ${index + 1}:</strong> ${subject}</span>
+          <div class="actions">
+            <button onclick="moveCycleItem(${index}, -1)" title="Subir">↑</button>
+            <button onclick="moveCycleItem(${index}, 1)" title="Descer">↓</button>
+            <button onclick="duplicateCycleItem(${index})" title="Duplicar">+</button>
+            <button onclick="removeCycleItem(${index})" title="Excluir">×</button>
+          </div>
         `;
         container.appendChild(item);
       });
+    }
+
+    function moveCycleItem(index, direction) {
+      const cycle = JSON.parse(localStorage.getItem('study_cycle') || JSON.stringify(defaultCycle));
+      const newIndex = index + direction;
+      if (newIndex < 0 || newIndex >= cycle.length) return;
+      const temp = cycle[index];
+      cycle[index] = cycle[newIndex];
+      cycle[newIndex] = temp;
+      localStorage.setItem('study_cycle', JSON.stringify(cycle));
+      renderCycle();
     }
 
     function duplicateCycleItem(index) {
@@ -540,6 +617,13 @@
     function resetCycle() {
       localStorage.setItem('study_cycle', JSON.stringify(defaultCycle));
       renderCycle();
+    }
+
+    // CALENDÁRIO MENSAL - ESTRUTURA ORIGINAL
+    function toggleExpandCalendar() {
+      calendarExpanded = !calendarExpanded;
+      const wrapper = document.getElementById('calendar-wrapper');
+      wrapper.style.display = calendarExpanded ? 'block' : 'none';
     }
 
     function renderCalendar() {
@@ -564,14 +648,18 @@
         dayEl.className = `calendar-day ${dayData.isRevision ? 'revision' : ''}`;
         
         let tasksHtml = dayData.tasks.map((task, i) => `
-          <li>${task} <button onclick="removeCalendarTask('${dateKey}', ${i})">×</button></li>
+          <li><span>• ${task}</span> <button onclick="removeCalendarTask('${dateKey}', ${i})">×</button></li>
         `).join('');
 
         dayEl.innerHTML = `
-          <div class="day-header">Dia ${day}</div>
-          <button onclick="toggleRevision('${dateKey}')">${dayData.isRevision ? 'Revisão' : 'Normal'}</button>
-          <ul class="day-tasks">${tasksHtml}</ul>
-          <input type="text" placeholder="Add..." onkeydown="if(event.key==='Enter') addCalendarTask('${dateKey}', this.value)" style="width:90%; font-size:10px;">
+          <div>
+            <div class="day-header">
+              <span>Dia ${day}</span>
+              <button class="btn-rev" onclick="toggleRevision('${dateKey}')">${dayData.isRevision ? 'Revisão' : 'Normal'}</button>
+            </div>
+            <ul class="day-tasks">${tasksHtml}</ul>
+          </div>
+          <input type="text" placeholder="+ Tópico..." onkeydown="if(event.key==='Enter') addCalendarTask('${dateKey}', this.value)" style="width:92%; font-size:10px; padding: 2px;">
         `;
         grid.appendChild(dayEl);
       }
@@ -603,17 +691,20 @@
       renderCalendar();
     }
 
+    // DASHBOARD - TODOS OS GRÁFICOS (ROSCA, TOTAL, SEMANAL, MENSAL)
     let chartDoughnutInstance = null;
     let chartBarInstance = null;
+    let chartWeeklyInstance = null;
+    let chartMonthlyInstance = null;
 
     function renderCharts() {
       const history = JSON.parse(localStorage.getItem('study_hours') || '[]');
+      
+      // 1. Horas por Matéria (Rosca)
       const subjectTotals = {};
-
       history.forEach(item => {
         subjectTotals[item.subject] = (subjectTotals[item.subject] || 0) + (item.seconds / 3600);
       });
-
       const labels = Object.keys(subjectTotals);
       const data = Object.values(subjectTotals);
 
@@ -631,6 +722,7 @@
         options: { plugins: { title: { display: true, text: 'Horas por Matéria' } } }
       });
 
+      // 2. Acumulado Geral (Barra)
       const ctxB = document.getElementById('chartBar').getContext('2d');
       if (chartBarInstance) chartBarInstance.destroy();
       chartBarInstance = new Chart(ctxB, {
@@ -643,7 +735,56 @@
             backgroundColor: '#0056b3'
           }]
         },
-        options: { plugins: { title: { display: true, text: 'Total Acumulado (Horas)' } } }
+        options: { plugins: { title: { display: true, text: 'Total Acumulado por Matéria (Horas)' } } }
+      });
+
+      // 3. Horas Semanais
+      const weeklyTotals = {};
+      history.forEach(item => {
+        const date = new Date(item.date);
+        const startOfYear = new Date(date.getFullYear(), 0, 1);
+        const weekNum = Math.ceil((((date - startOfYear) / 86400000) + startOfYear.getDay() + 1) / 7);
+        const key = `Semana ${weekNum}`;
+        weeklyTotals[key] = (weeklyTotals[key] || 0) + (item.seconds / 3600);
+      });
+
+      const ctxW = document.getElementById('chartWeekly').getContext('2d');
+      if (chartWeeklyInstance) chartWeeklyInstance.destroy();
+      chartWeeklyInstance = new Chart(ctxW, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(weeklyTotals),
+          datasets: [{
+            label: 'Horas na Semana',
+            data: Object.values(weeklyTotals),
+            backgroundColor: '#008080'
+          }]
+        },
+        options: { plugins: { title: { display: true, text: 'Horas Estudadas por Semana' } } }
+      });
+
+      // 4. Horas Mensais
+      const monthlyTotals = {};
+      history.forEach(item => {
+        const date = new Date(item.date);
+        const monthKey = `${date.getMonth() + 1}/${date.getFullYear()}`;
+        monthlyTotals[monthKey] = (monthlyTotals[monthKey] || 0) + (item.seconds / 3600);
+      });
+
+      const ctxM = document.getElementById('chartMonthly').getContext('2d');
+      if (chartMonthlyInstance) chartMonthlyInstance.destroy();
+      chartMonthlyInstance = new Chart(ctxM, {
+        type: 'line',
+        data: {
+          labels: Object.keys(monthlyTotals),
+          datasets: [{
+            label: 'Horas no Mês',
+            data: Object.values(monthlyTotals),
+            borderColor: '#28a745',
+            fill: false
+          }]
+        },
+        options: { plugins: { title: { display: true, text: 'Evolução Mensal (Horas)' } } }
       });
     }
 
