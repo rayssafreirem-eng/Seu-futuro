@@ -86,7 +86,6 @@
       margin-bottom: 20px;
     }
 
-    /* Cronômetro e Progresso */
     .timer-display {
       font-size: 3rem;
       font-weight: bold;
@@ -131,13 +130,11 @@
       line-height: 20px;
     }
 
-    /* Tabelas do Edital */
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
     th, td { padding: 10px; border: 1px solid var(--border-color); text-align: left; }
     th { background-color: #f1f3f5; }
     tr.completed td { text-decoration: line-through; color: #888; background-color: #f8f9fa; }
 
-    /* Dashboard e Ciclo */
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
 
@@ -150,10 +147,8 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      cursor: grab;
     }
 
-    /* Calendário */
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -172,13 +167,6 @@
     .day-header { font-weight: bold; margin-bottom: 5px; }
     .day-tasks { list-style: none; padding: 0; margin: 0; }
     .day-tasks li { display: flex; justify-content: space-between; margin-bottom: 2px; }
-
-    /* Modal */
-    .modal {
-      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5); justify-content: center; align-items: center;
-    }
-    .modal-content { background: white; padding: 20px; border-radius: 8px; width: 300px; }
   </style>
 </head>
 <body>
@@ -265,133 +253,146 @@
   </div>
 
   <script>
-    // DADOS DO EDITAL (UNIFICADO)
+    // DADOS COMPLETOS E DETALHADOS DO EDITAL
     const editalData = {
       "Língua Portuguesa": [
-        { id: "p1", texto: "1 Compreensão e interpretação de textos de gêneros variados" },
-        { id: "p2", texto: "2 Reconhecimento de tipos e gêneros textuais" },
-        { id: "p3", texto: "3 Domínio da ortografia oficial" },
-        { id: "p4_1", texto: "4.1 Emprego de elementos de referenciação, substituição e conectores" },
-        { id: "p4_2", texto: "4.2 Emprego de tempos e modos verbais" },
-        { id: "p5_1", texto: "5.1 Emprego das classes de palavras" },
-        { id: "p5_2", texto: "5.2 Relações de coordenação entre orações e termos" },
-        { id: "p5_3", texto: "5.3 Relações de subordinação entre orações e termos" },
-        { id: "p5_4", texto: "5.4 Emprego dos sinais de pontuação" },
-        { id: "p5_5", texto: "5.5 Concordância verbal e nominal" },
-        { id: "p5_6", texto: "5.6 Regência verbal e nominal" },
-        { id: "p5_7", texto: "5.7 Emprego do sinal indicativo de crase" },
-        { id: "p5_8", texto: "5.8 Colocação dos pronomes átonos" },
-        { id: "p6_1", texto: "6.1 Significação das palavras" },
-        { id: "p6_2", texto: "6.2 Substituição de palavras ou de trechos de texto" },
-        { id: "p6_3", texto: "6.3 Reorganização da estrutura de orações e de períodos" },
-        { id: "p6_4", texto: "6.4 Reescrita de textos de diferentes gêneros e níveis de formalidade" },
-        { id: "p7", texto: "7 Figuras de linguagem" }
+        { id: "port_1", texto: "1 Compreensão e interpretação de textos de gêneros variados" },
+        { id: "port_2", texto: "2 Reconhecimento de tipos e gêneros textuais" },
+        { id: "port_3", texto: "3 Domínio da ortografia oficial" },
+        { id: "port_4_1", texto: "4.1 Emprego de elementos de referenciação, substituição e repetição, de conectores e de outros elementos de sequenciação textual" },
+        { id: "port_4_2", texto: "4.2 Emprego de tempos e modos verbais" },
+        { id: "port_5_1", texto: "5.1 Emprego das classes de palavras" },
+        { id: "port_5_2", texto: "5.2 Relações de coordenação entre orações e entre termos da oração" },
+        { id: "port_5_3", texto: "5.3 Relações de subordinação entre orações e entre termos da oração" },
+        { id: "port_5_4", texto: "5.4 Emprego dos sinais de pontuação" },
+        { id: "port_5_5", texto: "5.5 Concordância verbal e nominal" },
+        { id: "port_5_6", texto: "5.6 Regência verbal e nominal" },
+        { id: "port_5_7", texto: "5.7 Emprego do sinal indicativo de crase" },
+        { id: "port_5_8", texto: "5.8 Colocação dos pronomes átonos" },
+        { id: "port_6_1", texto: "6.1 Significação das palavras" },
+        { id: "port_6_2", texto: "6.2 Substituição de palavras ou de trechos de texto" },
+        { id: "port_6_3", texto: "6.3 Reorganização da estrutura de orações e de períodos do texto" },
+        { id: "port_6_4", texto: "6.4 Reescrita de textos de diferentes gêneros e níveis de formalidade" },
+        { id: "port_7", texto: "7 Figuras de linguagem" }
       ],
       "Raciocínio Lógico": [
-        { id: "rl1", texto: "1 Estruturas lógicas" },
-        { id: "rl2_1", texto: "2.1 Lógica de argumentação: Analogias, inferências, deduções e conclusões" },
-        { id: "rl3_1", texto: "3.1 Proposições simples e compostas" },
-        { id: "rl3_2", texto: "3.2 Tabelas-verdade" },
-        { id: "rl3_3", texto: "3.3 Equivalências" },
-        { id: "rl3_4", texto: "3.4 Leis de De Morgan" },
-        { id: "rl3_5", texto: "3.5 Diagramas lógicos" },
-        { id: "rl4", texto: "4 Lógica de primeira ordem" },
-        { id: "rl5", texto: "5 Princípios de contagem e probabilidade" },
-        { id: "rl6", texto: "6 Operações com conjuntos" },
-        { id: "rl7", texto: "7 Raciocínio lógico envolvendo problemas aritméticos, geométricos e matriciais" }
+        { id: "rl_1", texto: "1 Estruturas lógicas" },
+        { id: "rl_2_1", texto: "2.1 Lógica de argumentação: analogias, inferências, deduções e conclusões" },
+        { id: "rl_3_1", texto: "3.1 Proposições simples e compostas" },
+        { id: "rl_3_2", texto: "3.2 Tabelas-verdade" },
+        { id: "rl_3_3", texto: "3.3 Equivalências" },
+        { id: "rl_3_4", texto: "3.4 Leis de De Morgan" },
+        { id: "rl_3_5", texto: "3.5 Diagramas lógicos" },
+        { id: "rl_4", texto: "4 Lógica de primeira ordem" },
+        { id: "rl_5", texto: "5 Princípios de contagem e probabilidade" },
+        { id: "rl_6", texto: "6 Operações com conjuntos" },
+        { id: "rl_7", texto: "7 Raciocínio lógico envolvendo problemas aritméticos, geométricos e matriciais" }
       ],
       "Atualidades": [
-        { id: "at1_1", texto: "1.1 Política Nacional e Internacional: Eventos recentes no Brasil e mundo" },
-        { id: "at1_2", texto: "1.2 Relações internacionais, tratados, acordos, conflitos" },
-        { id: "at2_1", texto: "2.1 Economia: Eventos econômicos relevantes" },
-        { id: "at3_1", texto: "3.1 Sociedade e Cultura: Questões sociais (saúde, educação, segurança, meio ambiente)" },
-        { id: "at3_2", texto: "3.2 Tendências culturais e sociais" },
-        { id: "at3_3", texto: "3.3 Avanços científicos e tecnológicos" },
-        { id: "at4_1", texto: "4.1 Meio Ambiente: Mudanças climáticas e sustentabilidade" },
-        { id: "at4_2", texto: "4.2 Eventos ambientais significativos" },
-        { id: "at4_3", texto: "4.3 Conservação e preservação ambiental" },
-        { id: "at5_1", texto: "5.1 Tecnologia e Inovação: Novas tecnologias" },
-        { id: "at5_2", texto: "5.2 Desenvolvimentos em computação, internet e inteligência artificial" },
-        { id: "at6_1", texto: "6.1 Relações Internacionais: Discussões sobre questões globais" }
+        { id: "at_1_1", texto: "1.1 Política Nacional e Internacional: Eventos políticos recentes no Brasil e no mundo" },
+        { id: "at_1_2", texto: "1.2 Relações internacionais, tratados, acordos, conflitos, etc." },
+        { id: "at_2_1", texto: "2.1 Economia: Eventos econômicos relevantes" },
+        { id: "at_3_1", texto: "3.1 Sociedade e Cultura: Questões sociais (saúde, educação, segurança, meio ambiente)" },
+        { id: "at_3_2", texto: "3.2 Tendências culturais e sociais" },
+        { id: "at_3_3", texto: "3.3 Avanços científicos e tecnológicos" },
+        { id: "at_4_1", texto: "4.1 Meio Ambiente: Mudanças climáticas e sustentabilidade" },
+        { id: "at_4_2", texto: "4.2 Eventos ambientais significativos" },
+        { id: "at_4_3", texto: "4.3 Questões relacionadas à conservação e preservação ambiental" },
+        { id: "at_5_1", texto: "5.1 Tecnologia e Inovação: Novas tecnologias e inovações" },
+        { id: "at_5_2", texto: "5.2 Desenvolvimentos em ciência da computação, internet e inteligência artificial" },
+        { id: "at_6_1", texto: "6.1 Relações Internacionais: Discussões sobre questões globais" }
       ],
       "Noções de Informática": [
-        { id: "inf1", texto: "1 Conceitos básicos e utilização de tecnologias, hardware, software e periféricos" },
-        { id: "inf2", texto: "2 Edição de textos, planilhas e apresentações (MS Office 2010, 2013 e 365)" },
-        { id: "inf3", texto: "3 Noções de sistema operacional (Windows 10 e 11)" },
-        { id: "inf4", texto: "4 Redes de computadores, conceitos básicos, Internet e intranet" },
-        { id: "inf5", texto: "5 Programas de navegação (Mozilla Firefox e Google Chrome)" },
-        { id: "inf6", texto: "6 Programa de correio eletrônico (MS Outlook)" },
-        { id: "inf7", texto: "7 Sítios de busca e pesquisa na Internet" },
-        { id: "inf8", texto: "8 Conceitos de organização e gerenciamento de informações, arquivos e pastas" },
-        { id: "inf9", texto: "9 Segurança da informação: procedimentos de segurança" },
-        { id: "inf10", texto: "10 Noções de vírus, Worms e pragas virtuais" },
-        { id: "inf11", texto: "11 Aplicativos para segurança (antivírus, firewall, antispyware etc.)" },
-        { id: "inf12", texto: "12 Procedimentos de backup" }
+        { id: "inf_1", texto: "1 Conceitos básicos e utilização de tecnologias, ferramentas, aplicativos e procedimentos associados à internet/intranet, ferramentas e aplicativos de navegação, de correio eletrônico, de grupo e de redes sociais, de busca e pesquisa, de gerenciamento de dados e informações, bem como de periféricos de computadores" },
+        { id: "inf_2", texto: "2 Edição de textos, planilhas e apresentações (ambientes Microsoft Office 2010, 2013 e 365)" },
+        { id: "inf_3", texto: "3 Noções de sistema operacional (ambiente Windows 10 e 11)" },
+        { id: "inf_4", texto: "4 Redes de computadores, conceitos básicos, ferramentas, aplicativos e procedimentos de Internet e intranet" },
+        { id: "inf_5", texto: "5 Programas de navegação (Mozilla Firefox e Google Chrome)" },
+        { id: "inf_6", texto: "6 Programa de correio eletrônico (MS Outlook)" },
+        { id: "inf_7", texto: "7 Sítios de busca e pesquisa na Internet" },
+        { id: "inf_8", texto: "8 Conceitos de organização e de gerenciamento de informações, arquivos, pastas e programas" },
+        { id: "inf_9", texto: "9 Segurança da informação: procedimentos de segurança" },
+        { id: "inf_10", texto: "10 Noções de vírus, Worms e pragas virtuais" },
+        { id: "inf_11", texto: "11 Aplicativos para segurança (antivírus, firewall, antispyware etc.)" },
+        { id: "inf_12", texto: "12 Procedimentos de backup" }
       ],
       "Conhecimentos Complementares": [
-        { id: "cc1", texto: "1 Ética e função pública" },
-        { id: "cc2", texto: "2 Ética no Setor Público" },
-        { id: "cc3", texto: "3 Lei nº 8.429/1992 e suas alterações (Improbidade Administrativa)" },
-        { id: "cc4", texto: "4 Lei nº 9.784/1999 e suas alterações (Processo Administrativo)" },
-        { id: "cc5", texto: "5 Acesso à informação: Lei nº 12.527/2011 e Decreto nº 7.724/2012" },
-        { id: "cc6", texto: "6 Decreto nº 9.830/2019" },
-        { id: "cc7", texto: "7 Lei nº 13.709/2018 (LGPD)" },
-        { id: "cc8", texto: "8 Legislação Específica: Lei nº 5.905/1973; Decreto nº 94.406/1987; Regimento Interno do Cofen" }
+        { id: "leg_1", texto: "1 Ética e função pública" },
+        { id: "leg_2", texto: "2 Ética no Setor Público" },
+        { id: "leg_3", texto: "3 Lei nº 8.429/1992 e suas alterações (Improbidade Administrativa)" },
+        { id: "leg_4", texto: "4 Lei nº 9.784/1999 e suas alterações (Processo Administrativo)" },
+        { id: "leg_5", texto: "5 Acesso à informação: Lei nº 12.527/2011 e Decreto nº 7.724/2012" },
+        { id: "leg_6", texto: "6 Decreto nº 9.830/2019" },
+        { id: "leg_7", texto: "7 Lei nº 13.709/2018 (Lei Geral de Proteção de Dados Pessoais - LGPD)" },
+        { id: "leg_8", texto: "8 Legislação Específica: Lei nº 5.905/1973; Decreto nº 94.406/1987; Regimento Interno do Cofen" }
       ],
       "Conhecimentos Específicos": [
-        { id: "esp1_1_1", texto: "1.1.1 SUS: Princípios, diretrizes, estrutura e organização" },
-        { id: "esp1_1_2", texto: "1.1.2 Políticas de saúde" },
-        { id: "esp1_1_3", texto: "1.1.3 Estrutura e funcionamento das instituições e relações com serviços de saúde" },
-        { id: "esp1_1_4", texto: "1.1.4 Níveis progressivos de assistência à saúde" },
-        { id: "esp1_1_5", texto: "1.1.5 Sistema de planejamento do SUS (Estratégico e normativo)" },
-        { id: "esp1_1_6", texto: "1.1.6 Direitos dos usuários do SUS" },
-        { id: "esp1_1_7", texto: "1.1.7 Participação e controle social" },
-        { id: "esp1_1_8", texto: "1.1.8 Ações e programas do SUS" },
-        { id: "esp1_1_9", texto: "1.1.9 Legislação básica do SUS (Leis 8.080/1990 e 8.142/1990)" },
-        { id: "esp1_2_1", texto: "1.2.1 Vigilância Epidemiológica: Programas de prevenção/controle de doenças transmissíveis" },
-        { id: "esp1_2_2", texto: "1.2.2 Doenças e agravos não-transmissíveis" },
-        { id: "esp1_2_3", texto: "1.2.3 Programa Nacional de Imunizações (PNI)" },
-        { id: "esp1_3", texto: "1.3 Teorias e processo de enfermagem. Taxonomias de diagnósticos" },
-        { id: "esp1_4", texto: "1.4 Procedimentos técnicos em enfermagem" },
-        { id: "esp1_5", texto: "1.5 Assistência de enfermagem perioperatória" },
-        { id: "esp1_6_1", texto: "1.6.1 Enfermagem em alterações vasculares/circulatórias" },
-        { id: "esp1_6_2", texto: "1.6.2 Enfermagem em alterações digestivas e gastrointestinais" },
-        { id: "esp1_6_3", texto: "1.6.3 Enfermagem em alterações metabólicas e endócrinas" },
-        { id: "esp1_6_4", texto: "1.6.4 Enfermagem em alterações renais e do trato urinário" },
-        { id: "esp1_6_5", texto: "1.6.5 Enfermagem em alterações reprodutivas" },
-        { id: "esp1_6_6", texto: "1.6.6 Enfermagem em alterações tegumentares" },
-        { id: "esp1_6_7", texto: "1.6.7 Enfermagem em alterações neurológicas" },
-        { id: "esp1_6_8", texto: "1.6.8 Enfermagem em alterações musculoesqueléticas" },
-        { id: "esp1_7", texto: "1.7 Saúde sexual e reprodutiva da mulher (baixa e média complexidade)" },
-        { id: "esp1_8", texto: "1.8 Assistência à gestante, parturiente e puérpera" },
-        { id: "esp1_9", texto: "1.9 Assistência de enfermagem ao recém-nascido" },
-        { id: "esp1_10", texto: "1.10 Climatério, menopausa, prevenção e tratamento de ginecopatias" },
-        { id: "esp1_11", texto: "1.11 Criança sadia (crescimento, aleitamento) e doenças prevalentes na infância" },
-        { id: "esp1_12_1", texto: "1.12.1 Emergência hospitalar e pré-hospitalar: Estrutura organizacional" },
-        { id: "esp1_12_2", texto: "1.12.2 Suporte básico de vida (SBV)" },
-        { id: "esp1_12_3", texto: "1.12.3 Suporte avançado de vida (SAV)" },
-        { id: "esp1_12_4", texto: "1.12.4 Atendimento inicial ao politraumatizado" },
-        { id: "esp1_12_5", texto: "1.12.5 Atendimento na parada cardiorrespiratória (PCR)" },
-        { id: "esp1_12_6", texto: "1.12.6 Paciente crítico (hidroeletrolítico, acidobásico, ventilatório, renal/dialítico, hepático, coma)" },
-        { id: "esp1_12_7", texto: "1.12.7 Doação, captação e transplante de órgãos" },
-        { id: "esp1_12_8", texto: "1.12.8 Urgências: Violência, abuso de drogas, intoxicações e emergências ambientais" },
-        { id: "esp1_13", texto: "1.13 Gerenciamento em serviços de saúde e RH (dimensionamento, recrutamento, seleção)" },
-        { id: "esp1_14", texto: "1.14 Agravos à saúde relacionados ao trabalho" },
-        { id: "esp1_15", texto: "1.15 Gerenciamento dos resíduos de serviços de saúde (PGRSS)" },
-        { id: "esp1_16", texto: "1.16 Pesquisa em saúde e enfermagem (pressupostos teóricos e metodológicos)" },
-        { id: "esp1_17", texto: "1.17 Central de Material e Esterilização (CME): Processamento, esterilização e validação" },
-        { id: "esp1_18", texto: "1.18 Biossegurança: Risco biológico, precaução padrão e por forma de transmissão" },
-        { id: "esp1_19", texto: "1.19 Controle de infecção hospitalar (CCIH)" },
-        { id: "esp1_20", texto: "1.20 Código de Ética dos Profissionais de Enfermagem" },
-        { id: "esp2_1", texto: "2.1 Regimento Interno do Cofen" },
-        { id: "esp2_2", texto: "2.2 Lei nº 5.905/1973 (Criação do Sistema Cofen/Corens)" },
-        { id: "esp2_3", texto: "2.3 Lei nº 7.498/1986 e Decreto nº 94.406/1987 (Exercício Profissional)" },
-        { id: "esp2_4", texto: "2.4 Lei nº 8.967/1994" },
-        { id: "esp2_5", texto: "2.5 Resolução COFEN nº 507/2016 (Código de Ética dos Empregados Públicos)" },
-        { id: "esp2_6", texto: "2.6 Resoluções COFEN: 211/98, 214/98, 238/00, 381/11, 388/11, 424/12, 429/12, 450/13, 514/16" },
-        { id: "esp2_7", texto: "2.7 Resoluções COFEN: 543/17, 545/17, 557/17, 564/17, 565/17, 568/18, 569/18, 581/18, 588/18" },
-        { id: "esp2_8", texto: "2.8 Resoluções COFEN: 593/18, 606/19, 609/19, 626/20, 656/20, 660/21, 661/21, 703/22, 706/22" },
-        { id: "esp2_9", texto: "2.9 Resoluções COFEN: 713/22, 721/23, 725/23, 727/23, 736/24 e Parecer Normativo nº 1/2024/COFEN" }
+        // 1. CONHECIMENTOS TÉCNICOS
+        { id: "esp_1_1_1", texto: "1.1.1 SUS (Leis 8.080/90 e 8.142/90): Princípios, diretrizes, estrutura e organização" },
+        { id: "esp_1_1_2", texto: "1.1.2 Políticas de saúde" },
+        { id: "esp_1_1_3", texto: "1.1.3 Estrutura e funcionamento das instituições e suas relações com os serviços de saúde" },
+        { id: "esp_1_1_4", texto: "1.1.4 Níveis progressivos de assistência à saúde" },
+        { id: "esp_1_1_5", texto: "1.1.5 Sistema de planejamento do SUS" },
+        { id: "esp_1_1_5_1", texto: "1.1.5.1 Planejamento estratégico e normativo" },
+        { id: "esp_1_1_6", texto: "1.1.6 Direitos dos usuários do SUS" },
+        { id: "esp_1_1_7", texto: "1.1.7 Participação e controle social" },
+        { id: "esp_1_1_8", texto: "1.1.8 Ações e programas do SUS" },
+        { id: "esp_1_1_9", texto: "1.1.9 Legislação básica do SUS" },
+        { id: "esp_1_2_1", texto: "1.2.1 Vigilância epidemiológica: Programas de prevenção e controle de doenças transmissíveis prevalentes" },
+        { id: "esp_1_2_2", texto: "1.2.2 Doenças e agravos não-transmissíveis" },
+        { id: "esp_1_2_3", texto: "1.2.3 Programa Nacional de Imunizações (PNI)" },
+        { id: "esp_1_3", texto: "1.3 Teorias e processo de enfermagem. Taxonomias de diagnósticos de enfermagem" },
+        { id: "esp_1_4", texto: "1.4 Procedimentos técnicos em enfermagem" },
+        { id: "esp_1_5", texto: "1.5 Assistência de enfermagem perioperatória" },
+        { id: "esp_1_6_1", texto: "1.6.1 Enfermagem em alterações das funções cardiovascular e circulatória" },
+        { id: "esp_1_6_2", texto: "1.6.2 Enfermagem em alterações das funções digestiva e gastrointestinal" },
+        { id: "esp_1_6_3", texto: "1.6.3 Enfermagem em alterações das funções metabólica e endócrina" },
+        { id: "esp_1_6_4", texto: "1.6.4 Enfermagem em alterações das funções renal e do trato urinário" },
+        { id: "esp_1_6_5", texto: "1.6.5 Enfermagem em alterações da função reprodutiva" },
+        { id: "esp_1_6_6", texto: "1.6.6 Enfermagem em alterações da função tegumentar" },
+        { id: "esp_1_6_7", texto: "1.6.7 Enfermagem em alterações da função neurológica" },
+        { id: "esp_1_6_8", texto: "1.6.8 Enfermagem em alterações da função musculoesquelética" },
+        { id: "esp_1_7", texto: "1.7 Assistência de enfermagem à saúde sexual e reprodutiva da mulher (baixa e média complexidade)" },
+        { id: "esp_1_8", texto: "1.8 Assistência de enfermagem à gestante, parturiente e puérpera" },
+        { id: "esp_1_9", texto: "1.9 Assistência de enfermagem ao recém-nascido" },
+        { id: "esp_1_10", texto: "1.10 Assistência à mulher no climatério e menopausa e na prevenção/tratamento de ginecopatias" },
+        { id: "esp_1_11", texto: "1.11 Criança sadia (crescimento, desenvolvimento, aleitamento) e cuidado nas doenças prevalentes na infância" },
+        { id: "esp_1_12_1", texto: "1.12.1 Estrutura organizacional do serviço de emergência hospitalar e pré-hospitalar" },
+        { id: "esp_1_12_2", texto: "1.12.2 Suporte básico de vida em emergências" },
+        { id: "esp_1_12_3", texto: "1.12.3 Suporte avançado de vida" },
+        { id: "esp_1_12_4", texto: "1.12.4 Atendimento inicial ao politraumatizado" },
+        { id: "esp_1_12_5", texto: "1.12.5 Atendimento na parada cardiorrespiratória" },
+        { id: "esp_1_12_6", texto: "1.12.6 Assistência ao paciente crítico com distúrbios hidroeletrolíticos, acidobásicos, insuficiência respiratória e ventilação mecânica" },
+        { id: "esp_1_12_6_1", texto: "1.12.6.1 Insuficiência renal e métodos dialíticos" },
+        { id: "esp_1_12_6_2", texto: "1.12.6.2 Insuficiência hepática" },
+        { id: "esp_1_12_6_3", texto: "1.12.6.3 Avaliação de consciência no paciente em coma" },
+        { id: "esp_1_12_7", texto: "1.12.7 Doação, captação e transplante de órgãos" },
+        { id: "esp_1_12_8", texto: "1.12.8 Enfermagem em urgências" },
+        { id: "esp_1_12_8_1", texto: "1.12.8.1 Violência, abuso de drogas, intoxicações, emergências ambientais" },
+        { id: "esp_1_13", texto: "1.13 Gerenciamento de enfermagem em serviços de saúde" },
+        { id: "esp_1_13_1", texto: "1.13.1 Gerenciamento de recursos humanos" },
+        { id: "esp_1_13_1_1", texto: "1.13.1.1 Dimensionamento, recrutamento, seleção, educação em procedimentos e métodos diagnósticos" },
+        { id: "esp_1_14", texto: "1.14 Agravos à saúde relacionados ao trabalho" },
+        { id: "esp_1_15", texto: "1.15 Gerenciamento dos resíduos de serviços de saúde" },
+        { id: "esp_1_16", texto: "1.16 Pressupostos teóricos e metodológicos da pesquisa em saúde e enfermagem" },
+        { id: "esp_1_17_1", texto: "1.17.1 Central de material e esterilização: Processamento de produtos para saúde" },
+        { id: "esp_1_17_2", texto: "1.17.2 Processos de esterilização de produtos para saúde" },
+        { id: "esp_1_17_3", texto: "1.17.3 Controle de qualidade e validação dos processos de esterilização" },
+        { id: "esp_1_18_1", texto: "1.18.1 Biossegurança: Risco biológico e medidas de precauções básicas" },
+        { id: "esp_1_18_2", texto: "1.18.2 Precaução padrão e precauções por forma de transmissão das doenças" },
+        { id: "esp_1_18_2_1", texto: "1.18.2.1 Definição, indicações de uso e recursos materiais" },
+        { id: "esp_1_18_2_2", texto: "1.18.2.2 Medidas de proteção cabíveis nas situações de risco potencial de exposição" },
+        { id: "esp_1_19", texto: "1.19 Controle de infecção hospitalar" },
+        { id: "esp_1_20", texto: "1.20 Código de ética dos profissionais de enfermagem" },
+
+        // 2. LEGISLAÇÃO ESPECÍFICA
+        { id: "esp_2_1", texto: "2.1 Regimento Interno do Cofen" },
+        { id: "esp_2_2", texto: "2.2 Lei nº 5.905/1973" },
+        { id: "esp_2_3", texto: "2.3 Lei nº 7.498/1986" },
+        { id: "esp_2_4", texto: "2.4 Decreto nº 94.406/1987" },
+        { id: "esp_2_5", texto: "2.5 Lei nº 8.967/1994" },
+        { id: "esp_2_6", texto: "2.6 Código de Ética dos Empregados Públicos do Sistema COFEN/COREN (Resolução COFEN nº 507/2016)" },
+        { id: "esp_2_7", texto: "2.7 Resoluções COFEN: nº 211/1998, nº 214/1998, nº 238/2000, nº 381/2011, nº 388/2011, nº 424/2012, nº 429/2012, nº 450/2013, nº 514/2016, nº 543/2017, nº 545/2017, nº 557/2017, nº 564/2017, nº 565/2017, nº 568/2018, nº 569/2018, nº 581/2018, nº 588/2018, nº 593/2018, nº 606/2019, nº 609/2019, nº 626/2020, nº 656/2020, nº 660/2021, nº 661/2021, nº 703/2022, nº 706/2022, nº 713/2022, nº 721/2023, nº 725/2023, nº 727/2023, nº 736/2024, Parecer Normativo nº 1/2024/COFEN" }
       ]
     };
 
@@ -401,7 +402,6 @@
       "Conhecimentos Complementares", "Noções de Informática", "Atualidades"
     ];
 
-    // LÓGICA E INICIALIZAÇÃO
     let timerInterval = null;
     let timerSeconds = 0;
 
@@ -454,7 +454,6 @@
       renderEdital();
     }
 
-    // CRONÔMETRO
     function startTimer() {
       if (timerInterval) return;
       timerInterval = setInterval(() => {
@@ -507,7 +506,6 @@
       bar.innerText = `${totalHours.toFixed(1)}h / 300h (${percent}%)`;
     }
 
-    // CICLO DE ESTUDOS
     function renderCycle() {
       const cycle = JSON.parse(localStorage.getItem('study_cycle') || JSON.stringify(defaultCycle));
       const container = document.getElementById('cycle-container');
@@ -544,7 +542,6 @@
       renderCycle();
     }
 
-    // CALENDÁRIO
     function renderCalendar() {
       const picker = document.getElementById('calendar-month-picker');
       if (!picker.value) {
@@ -606,7 +603,6 @@
       renderCalendar();
     }
 
-    // GRÁFICOS (CHART.JS)
     let chartDoughnutInstance = null;
     let chartBarInstance = null;
 
@@ -621,7 +617,6 @@
       const labels = Object.keys(subjectTotals);
       const data = Object.values(subjectTotals);
 
-      // Gráfico de Rosca
       const ctxD = document.getElementById('chartDoughnut').getContext('2d');
       if (chartDoughnutInstance) chartDoughnutInstance.destroy();
       chartDoughnutInstance = new Chart(ctxD, {
@@ -636,7 +631,6 @@
         options: { plugins: { title: { display: true, text: 'Horas por Matéria' } } }
       });
 
-      // Gráfico de Barras
       const ctxB = document.getElementById('chartBar').getContext('2d');
       if (chartBarInstance) chartBarInstance.destroy();
       chartBarInstance = new Chart(ctxB, {
@@ -653,7 +647,6 @@
       });
     }
 
-    // BACKUP (EXPORTAR / IMPORTAR)
     function exportarBackup() {
       const backupData = {
         edital_checks: JSON.parse(localStorage.getItem('edital_checks') || '{}'),
@@ -692,7 +685,6 @@
       reader.readAsText(file);
     }
 
-    // INICIALIZAÇÃO
     window.onload = function() {
       renderEdital();
       updateHoursProgress();
