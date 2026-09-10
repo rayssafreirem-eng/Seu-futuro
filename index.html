@@ -96,7 +96,7 @@
 
     .timer-controls { text-align: center; margin-bottom: 15px; }
     .btn {
-      padding: 10px 18px;
+      padding: 8px 16px;
       border: none;
       border-radius: 4px;
       cursor: pointer;
@@ -109,6 +109,7 @@
     .btn-pause { background-color: var(--warning-color); color: #000; }
     .btn-reset { background-color: var(--danger-color); }
     .btn-save { background-color: var(--primary-color); }
+    .btn-outline { background-color: transparent; border: 1px solid #ccc; color: #333; }
 
     .progress-bar-container {
       background-color: #e9ecef;
@@ -138,52 +139,180 @@
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
     @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
 
-    .cycle-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-    .cycle-item {
-      background: var(--secondary-color);
-      color: white;
-      padding: 10px 15px;
-      border-radius: 6px;
+    /* MONTADOR DE CICLO ESTILO TAG/CARD COM DRAG AND DROP */
+    .cycle-dropzone {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 15px;
+      border: 1.5px dashed #ccc;
+      border-radius: 8px;
+      background-color: #fafafa;
+      min-height: 60px;
+      margin-top: 10px;
     }
-    .cycle-item .actions button {
-      background: rgba(255,255,255,0.2);
-      border: none;
+
+    .cycle-tag {
+      background-color: #0056b3;
       color: white;
-      padding: 4px 8px;
-      border-radius: 3px;
-      cursor: pointer;
-      margin-left: 3px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       font-weight: bold;
+      font-size: 0.88rem;
+      cursor: grab;
+      user-select: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-    .cycle-item .actions button:hover { background: rgba(255,255,255,0.4); }
+
+    .cycle-tag:active { cursor: grabbing; }
+
+    .cycle-tag-btn {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      color: white;
+      line-height: 1;
+    }
+
+    .cycle-tag-btn.add { background-color: #28a745; }
+    .cycle-tag-btn.remove { background-color: #dc3545; }
+
+    /* LAYOUT CALENDÁRIO IGUAL À IMAGEM */
+    .calendar-headers {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-bottom: 8px;
+      text-align: center;
+      font-weight: bold;
+      color: #495057;
+    }
+
+    .calendar-header-day {
+      background: #e9ecef;
+      padding: 6px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
 
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
-      margin-top: 10px;
+      gap: 8px;
     }
-    .calendar-day {
+
+    .calendar-cell {
       background: #fff;
       border: 1px solid var(--border-color);
-      min-height: 110px;
+      border-radius: 6px;
+      min-height: 130px;
       padding: 6px;
-      border-radius: 4px;
-      font-size: 12px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      position: relative;
     }
-    .calendar-day.revision { background-color: #fff3cd; border-color: #ffeeba; }
-    .day-header { font-weight: bold; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
-    .day-tasks { list-style: none; padding: 0; margin: 0 0 5px 0; flex-grow: 1; }
-    .day-tasks li { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; background: rgba(0,0,0,0.03); padding: 2px 4px; border-radius: 3px; }
-    .day-tasks li button { background: none; border: none; color: var(--danger-color); cursor: pointer; font-weight: bold; }
-    .btn-rev { font-size: 10px; padding: 2px 5px; border: 1px solid #ccc; background: #fff; border-radius: 3px; cursor: pointer; }
-    .calendar-day.revision .btn-rev { background: var(--warning-color); border-color: #d39e00; }
+
+    .calendar-cell.empty {
+      background: transparent;
+      border: none;
+    }
+
+    .cell-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .cell-day-num {
+      font-weight: bold;
+      font-size: 0.95rem;
+      color: #333;
+    }
+
+    .btn-rev-badge {
+      border: 1px solid #dc3545;
+      color: #dc3545;
+      background: #fff;
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-rev-badge.active {
+      background: #dc3545;
+      color: white;
+    }
+
+    .cell-input {
+      width: 90%;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      padding: 3px 5px;
+      font-size: 11px;
+      margin-bottom: 6px;
+      color: #555;
+    }
+
+    .cell-tasks-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 6px 0;
+      flex-grow: 1;
+      font-size: 11px;
+    }
+
+    .cell-tasks-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8f9fa;
+      padding: 2px 4px;
+      border-radius: 3px;
+      margin-bottom: 2px;
+    }
+
+    .cell-tasks-list li button {
+      background: none;
+      border: none;
+      color: var(--danger-color);
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 11px;
+    }
+
+    .cell-footer {
+      text-align: center;
+      border-top: 1px dashed #eee;
+      padding-top: 3px;
+    }
+
+    .btn-expand-cell {
+      background: none;
+      border: none;
+      color: #666;
+      font-size: 10px;
+      cursor: pointer;
+    }
+
+    .calendar-cell.expanded {
+      min-height: 220px;
+      z-index: 5;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
   </style>
 </head>
 <body>
@@ -257,23 +386,41 @@
         </div>
       </div>
 
-      <div class="card">
-        <h2>Ciclo de Estudos</h2>
-        <button class="btn btn-reset" onclick="resetCycle()" style="margin-bottom: 10px;">Resetar Ciclo Padrão</button>
-        <div id="cycle-container" class="cycle-container"></div>
-      </div>
-
+      <!-- MONTADOR DE CICLO CONFORME IMAGEM -->
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <h2>Calendário Mensal</h2>
-          <div>
-            <input type="month" id="calendar-month-picker" onchange="renderCalendar()">
-            <button class="btn btn-save" onclick="toggleExpandCalendar()" id="btn-expand-cal">Expandir / Ocultar</button>
-          </div>
+          <h2 style="color: #0056b3; margin: 0;">1. Montador do Ciclo de Estudos (Arraste para Reordenar)</h2>
+          <button class="btn btn-outline" onclick="resetCycle()">Resetar Ciclo</button>
         </div>
-        <div id="calendar-wrapper">
-          <div id="calendar-grid" class="calendar-grid"></div>
+        <p style="font-size: 0.85rem; color: #666; margin: 5px 0 10px 0;">
+          Arraste os blocos para ajustar a sequência. Clique no <strong>+</strong> para duplicar uma disciplina e aumentar suas horas no ciclo.
+        </p>
+        <div id="cycle-dropzone" class="cycle-dropzone"></div>
+      </div>
+
+      <!-- CALENDÁRIO MENSAL CONFORME IMAGEM -->
+      <div class="card">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+          <strong>Selecione o Mês de Referência:</strong>
+          <input type="month" id="calendar-month-picker" onchange="renderCalendar()" style="padding: 4px 8px;">
         </div>
+
+        <h2 id="calendar-title" style="color: #0056b3; margin-top: 0;">2. Calendário de Setembro de 2026</h2>
+        <p style="font-size: 0.85rem; color: #666; margin: 5px 0 15px 0;">
+          Adicione as matérias estudadas no dia para criar tópicos. Use a seta "<strong>↙ Expandir</strong>" caso a célula fique pequena.
+        </p>
+
+        <div class="calendar-headers">
+          <div class="calendar-header-day">Dom</div>
+          <div class="calendar-header-day">Seg</div>
+          <div class="calendar-header-day">Ter</div>
+          <div class="calendar-header-day">Qua</div>
+          <div class="calendar-header-day">Qui</div>
+          <div class="calendar-header-day">Sex</div>
+          <div class="calendar-header-day">Sáb</div>
+        </div>
+
+        <div id="calendar-grid" class="calendar-grid"></div>
       </div>
 
     </div>
@@ -281,7 +428,7 @@
   </div>
 
   <script>
-    // DADOS COMPLETOS E DETALHADOS DO EDITAL (COM RESOLUÇÕES COFEN DESMEMBRADAS NO ITEM 2.7)
+    // DADOS COMPLETOS E DETALHADOS DO EDITAL
     const editalData = {
       "Língua Portuguesa": [
         { id: "port_1", texto: "1 Compreensão e interpretação de textos de gêneros variados" },
@@ -355,7 +502,6 @@
         { id: "leg_8", texto: "8 Legislação Específica: Lei nº 5.905/1973; Decreto nº 94.406/1987; Regimento Interno do Cofen" }
       ],
       "Conhecimentos Específicos": [
-        // 1. CONHECIMENTOS TÉCNICOS
         { id: "esp_1_1_1", texto: "1.1.1 SUS (Leis 8.080/90 e 8.142/90): Princípios, diretrizes, estrutura e organização" },
         { id: "esp_1_1_2", texto: "1.1.2 Políticas de saúde" },
         { id: "esp_1_1_3", texto: "1.1.3 Estrutura e funcionamento das instituições e suas relações com os serviços de saúde" },
@@ -412,8 +558,6 @@
         { id: "esp_1_18_2_2", texto: "1.18.2.2 Medidas de proteção cabíveis nas situações de risco potencial de exposição" },
         { id: "esp_1_19", texto: "1.19 Controle de infecção hospitalar" },
         { id: "esp_1_20", texto: "1.20 Código de ética dos profissionais de enfermagem" },
-
-        // 2. LEGISLAÇÃO ESPECÍFICA (2.7 DESMEMBRADO EM CHECKBOXES INDIVIDUAIS)
         { id: "esp_2_1", texto: "2.1 Regimento Interno do Cofen" },
         { id: "esp_2_2", texto: "2.2 Lei nº 5.905/1973" },
         { id: "esp_2_3", texto: "2.3 Lei nº 7.498/1986" },
@@ -457,14 +601,14 @@
     };
 
     const defaultCycle = [
-      "Conhecimentos Específicos", "Língua Portuguesa", 
-      "Conhecimentos Específicos", "Raciocínio Lógico", 
-      "Conhecimentos Complementares", "Noções de Informática", "Atualidades"
+      "Raciocínio Lógico", "Língua Portuguesa", "Atualidades", 
+      "Noções de Informática", "Legislação e Ética", 
+      "Conhecimentos Específicos", "Legislação Específica"
     ];
 
     let timerInterval = null;
     let timerSeconds = 0;
-    let calendarExpanded = true;
+    let draggedCycleIndex = null;
 
     function switchTab(tabId, evt) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -567,36 +711,52 @@
       bar.innerText = `${totalHours.toFixed(1)}h / 300h (${percent}%)`;
     }
 
-    // CICLO DE ESTUDOS - REORGANIZÁVEL (MOVER PARA CIMA E PARA BAIXO)
+    // MONTADOR DE CICLO COM DRAG AND DROP NATIVO
     function renderCycle() {
       const cycle = JSON.parse(localStorage.getItem('study_cycle') || JSON.stringify(defaultCycle));
-      const container = document.getElementById('cycle-container');
+      const container = document.getElementById('cycle-dropzone');
       container.innerHTML = '';
 
       cycle.forEach((subject, index) => {
-        const item = document.createElement('div');
-        item.className = 'cycle-item';
-        item.innerHTML = `
-          <span><strong>Etapa ${index + 1}:</strong> ${subject}</span>
-          <div class="actions">
-            <button onclick="moveCycleItem(${index}, -1)" title="Subir">↑</button>
-            <button onclick="moveCycleItem(${index}, 1)" title="Descer">↓</button>
-            <button onclick="duplicateCycleItem(${index})" title="Duplicar">+</button>
-            <button onclick="removeCycleItem(${index})" title="Excluir">×</button>
-          </div>
+        const tag = document.createElement('div');
+        tag.className = 'cycle-tag';
+        tag.draggable = true;
+        tag.dataset.index = index;
+
+        tag.innerHTML = `
+          <span>${subject}</span>
+          <button class="cycle-tag-btn add" onclick="duplicateCycleItem(${index})" title="Duplicar">+</button>
+          <button class="cycle-tag-btn remove" onclick="removeCycleItem(${index})" title="Excluir">×</button>
         `;
-        container.appendChild(item);
+
+        // Eventos de Arrasta e Solta (Drag and Drop)
+        tag.addEventListener('dragstart', (e) => {
+          draggedCycleIndex = index;
+          e.dataTransfer.effectAllowed = 'move';
+        });
+
+        tag.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+        });
+
+        tag.addEventListener('drop', (e) => {
+          e.preventDefault();
+          if (draggedCycleIndex !== null && draggedCycleIndex !== index) {
+            reorderCycle(draggedCycleIndex, index);
+          }
+        });
+
+        container.appendChild(tag);
       });
     }
 
-    function moveCycleItem(index, direction) {
+    function reorderCycle(fromIndex, toIndex) {
       const cycle = JSON.parse(localStorage.getItem('study_cycle') || JSON.stringify(defaultCycle));
-      const newIndex = index + direction;
-      if (newIndex < 0 || newIndex >= cycle.length) return;
-      const temp = cycle[index];
-      cycle[index] = cycle[newIndex];
-      cycle[newIndex] = temp;
+      const movedItem = cycle.splice(fromIndex, 1)[0];
+      cycle.splice(toIndex, 0, movedItem);
       localStorage.setItem('study_cycle', JSON.stringify(cycle));
+      draggedCycleIndex = null;
       renderCycle();
     }
 
@@ -619,33 +779,43 @@
       renderCycle();
     }
 
-    // CALENDÁRIO MENSAL - ESTRUTURA ORIGINAL
-    function toggleExpandCalendar() {
-      calendarExpanded = !calendarExpanded;
-      const wrapper = document.getElementById('calendar-wrapper');
-      wrapper.style.display = calendarExpanded ? 'block' : 'none';
-    }
+    // CALENDÁRIO COM GRADE DE DIAS DA SEMANA IGUAL À IMAGEM
+    const monthNames = [
+      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    ];
 
     function renderCalendar() {
       const picker = document.getElementById('calendar-month-picker');
       if (!picker.value) {
-        const now = new Date();
-        picker.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        picker.value = "2026-09";
       }
 
       const [year, month] = picker.value.split('-').map(Number);
+      document.getElementById('calendar-title').innerText = `2. Calendário de ${monthNames[month - 1]} de ${year}`;
+
       const grid = document.getElementById('calendar-grid');
       grid.innerHTML = '';
 
+      const firstDayOfWeek = new Date(year, month - 1, 1).getDay(); // 0 = Dom, 1 = Seg...
       const daysInMonth = new Date(year, month, 0).getDate();
       const calendarData = JSON.parse(localStorage.getItem('calendar_data') || '{}');
 
+      // Células vazias antes do dia 1
+      for (let i = 0; i < firstDayOfWeek; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'calendar-cell empty';
+        grid.appendChild(emptyCell);
+      }
+
+      // Preenchimento dos dias
       for (let day = 1; day <= daysInMonth; day++) {
         const dateKey = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const dayData = calendarData[dateKey] || { tasks: [], isRevision: false };
 
         const dayEl = document.createElement('div');
-        dayEl.className = `calendar-day ${dayData.isRevision ? 'revision' : ''}`;
+        dayEl.className = 'calendar-cell';
+        dayEl.id = `cell-${dateKey}`;
         
         let tasksHtml = dayData.tasks.map((task, i) => `
           <li><span>• ${task}</span> <button onclick="removeCalendarTask('${dateKey}', ${i})">×</button></li>
@@ -653,15 +823,25 @@
 
         dayEl.innerHTML = `
           <div>
-            <div class="day-header">
-              <span>Dia ${day}</span>
-              <button class="btn-rev" onclick="toggleRevision('${dateKey}')">${dayData.isRevision ? 'Revisão' : 'Normal'}</button>
+            <div class="cell-top">
+              <span class="cell-day-num">${day}</span>
+              <button class="btn-rev-badge ${dayData.isRevision ? 'active' : ''}" onclick="toggleRevision('${dateKey}')">Revisão</button>
             </div>
-            <ul class="day-tasks">${tasksHtml}</ul>
+            <input type="text" class="cell-input" placeholder="Matéria..." onkeydown="if(event.key==='Enter') addCalendarTask('${dateKey}', this.value)">
+            <ul class="cell-tasks-list">${tasksHtml}</ul>
           </div>
-          <input type="text" placeholder="+ Tópico..." onkeydown="if(event.key==='Enter') addCalendarTask('${dateKey}', this.value)" style="width:92%; font-size:10px; padding: 2px;">
+          <div class="cell-footer">
+            <button class="btn-expand-cell" onclick="toggleExpandCell('${dateKey}')">↙ Expandir</button>
+          </div>
         `;
         grid.appendChild(dayEl);
+      }
+    }
+
+    function toggleExpandCell(dateKey) {
+      const cell = document.getElementById(`cell-${dateKey}`);
+      if (cell) {
+        cell.classList.toggle('expanded');
       }
     }
 
@@ -691,7 +871,7 @@
       renderCalendar();
     }
 
-    // DASHBOARD - TODOS OS GRÁFICOS (ROSCA, TOTAL, SEMANAL, MENSAL)
+    // DASHBOARD DE GRÁFICOS
     let chartDoughnutInstance = null;
     let chartBarInstance = null;
     let chartWeeklyInstance = null;
@@ -700,7 +880,6 @@
     function renderCharts() {
       const history = JSON.parse(localStorage.getItem('study_hours') || '[]');
       
-      // 1. Horas por Matéria (Rosca)
       const subjectTotals = {};
       history.forEach(item => {
         subjectTotals[item.subject] = (subjectTotals[item.subject] || 0) + (item.seconds / 3600);
@@ -722,7 +901,6 @@
         options: { plugins: { title: { display: true, text: 'Horas por Matéria' } } }
       });
 
-      // 2. Acumulado Geral (Barra)
       const ctxB = document.getElementById('chartBar').getContext('2d');
       if (chartBarInstance) chartBarInstance.destroy();
       chartBarInstance = new Chart(ctxB, {
@@ -738,7 +916,6 @@
         options: { plugins: { title: { display: true, text: 'Total Acumulado por Matéria (Horas)' } } }
       });
 
-      // 3. Horas Semanais
       const weeklyTotals = {};
       history.forEach(item => {
         const date = new Date(item.date);
@@ -763,7 +940,6 @@
         options: { plugins: { title: { display: true, text: 'Horas Estudadas por Semana' } } }
       });
 
-      // 4. Horas Mensais
       const monthlyTotals = {};
       history.forEach(item => {
         const date = new Date(item.date);
